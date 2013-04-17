@@ -1,0 +1,14 @@
+* 不要使用python的+运算符
+  + 在python之中, string object虽然是属于不定长的对象,但是却又是不可变的不定长对象.
+  + 如果用+操作符的情况下,会新生成一个string object, 如果连续连接N个字符串对象,效率
+    就会直线下降
+  + 替代的办法是使用join
+    #+begin_src python
+      a = "abc"
+      b = "123"
+      c = "xyz"
+      # will call string_concat twice
+      a + b + c
+      # will call string_join only once
+      ' '.join([a, b, c])
+    #+end_src
