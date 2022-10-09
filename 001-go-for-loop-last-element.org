@@ -1,1 +1,66 @@
-* Go 语言中for-loop最后一个成员覆盖前面的成员
+* Go 语言中range-loop,使用指针的话,最后一个成员覆盖前面的成员
+  + go语言的range loop,为了让代码更简洁,再每次的循环里面,复用了index和value两个变量:
+    - 常规代码如下:
+      #+begin_src go
+        for index, value := range SomeSlice {
+        }
+      #+end_src
+    - 等效代码如下:
+      #+begin_src go
+        var value SomeType
+        for index := 0; index < len(SomeSlice); i++ {
+                value = SomeSlice[index]
+        }
+      #+end_src
+  + 所以一旦在range loop里面出现`&`,那么就要非常小心,可能最后得到的值,永远是`&`最后一次的引用,也就是
+    循环的最后一个值
+    #+begin_src go
+      // -*- mode:go;mode:go-playground -*-
+      // snippet of code @ 2022-10-09 11:16:50
+
+      // === Go Playground ===
+      // Execute the snippet with Ctl-Return
+      // Provide custom arguments to compile with Alt-Return
+      // Remove the snippet completely with its dir and all files M-x `go-playground-rm`
+
+      package main
+
+      import (
+              "fmt"
+      )
+
+      type Person struct {
+              Name string
+      }
+
+      func main() {
+              fmt.Println("Results:")
+
+              persons := []Person{
+                      Person{Name: "Alice"},
+                      Person{Name: "Bob"},
+              }
+
+              fmt.Println(persons)
+
+              var alicePerson *Person
+
+              for i, person := range persons {
+                      // i和person这两个变量,被反复利用,所以每次循环中,两者地址都不变
+                      fmt.Printf("%p,%p\n", &i, &person)
+
+                      if person.Name == "Alice" {
+                              alicePerson = &person
+                      }
+              }
+
+              fmt.Println(alicePerson)
+
+      }
+
+      // Results:
+      // [{Alice} {Bob}]
+      // 0xc0000ac020,0xc000096250
+      // 0xc0000ac020,0xc000096250
+      // &{Bob}
+    #+end_src
