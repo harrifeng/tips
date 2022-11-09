@@ -1,0 +1,17 @@
+* 标准输出和标准输入打入同一个文件
+  + 比如使用如下代码, 注意 `2>&1` 必须在最后
+    #+begin_src shell
+      $ python main.py  > output.txt 2>&1
+      $ cat output.txt
+      error msg
+      hello
+    #+end_src
+  + 如果`2>&1` 在中间,那么就是把standard output写入到file,之后再把standard error写入到 standard
+    output(和直接把standard output 写入文件是等同的,因为standard error 本来默认就是写到standard
+    output)
+    #+begin_src shell
+      $ python main.py  2>&1 > output.txt
+      error msg
+      $ cat output.txt
+      hello
+    #+end_src
